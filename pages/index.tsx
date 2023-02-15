@@ -4,8 +4,6 @@ import { Button, Input, Textarea } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 
-export const LOCAL_ID = "solomon_uuid";
-
 const Home: NextPage = () => {
   const router = useRouter();
 
@@ -25,7 +23,7 @@ const Home: NextPage = () => {
 
       <MainContainer>
         <Background img="castle.jpeg" />
-        <MainTitle>Welcome To Hogwarts!</MainTitle>
+        <MainTitle>Welcome To The Hogwarts!</MainTitle>
         <CharactersContainer>
           <div
             style={{ background: "url(potter.jpeg)" }}
