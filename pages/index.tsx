@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { Button, Input, Textarea, useDisclosure } from "@chakra-ui/react";
+import { Button, Input, Textarea } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 

@@ -6,10 +6,6 @@ import styled from "@emotion/styled";
 import { ThemeProvider } from "@emotion/react";
 import { lightTheme, darkTheme } from "../styles/theme";
 import { useStore } from "../utils/store";
-import AppBar from "../components/AppBar";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import Script from "next/script";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { darkMode } = useStore();
