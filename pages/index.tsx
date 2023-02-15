@@ -1,231 +1,93 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
 import { Button, Input, Textarea, useDisclosure } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { dbService } from "../utils/fbase";
 import styled from "@emotion/styled";
-import { ProblemType } from "./problems";
-import Link from "next/link";
-import Examples from "./components/Examples";
-import router from "next/router";
-import { useStore } from "../utils/store";
-import { v4 as uuidv4 } from "uuid";
-import { dummy } from "../utils/utters";
-import Footer from "../components/Footer";
-import AskModal from "../components/AskModal";
-import axios from "axios";
+import { useRouter } from "next/router";
 
 export const LOCAL_ID = "solomon_uuid";
 
 const Home: NextPage = () => {
-  const [problem, setProblem] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [changed, setChanged] = useState(0);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { setQuestion, setAnswer, setDarkMode, setUid, uid } = useStore();
+  const router = useRouter();
 
-  useEffect(() => {
-    getUidAndSet();
-    setDarkMode(false);
-    setChanged(0);
-  }, []);
-
-  const getUidAndSet = () => {
-    if (uid === "anonymous") {
-      let myuuid = localStorage.getItem(LOCAL_ID);
-      if (myuuid) {
-        setUid(myuuid);
-      } else {
-        myuuid = uuidv4();
-        if (myuuid) {
-          setUid(myuuid);
-          localStorage.setItem(LOCAL_ID, myuuid);
-        }
-      }
-    }
-  };
-
-  const callApi = async () => {
-    console.log("문제 요청 보내기11");
-
-    const body = {
-      type: "problem",
-      query: problem,
-    };
-
-    const response = await axios.post("/chat", body, {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-
-    console.log("응답", response);
-    const output = response;
-    // const output = await response.json();
-    console.log("문제 API 결과", output.data);
-    if (!output) return dummy;
-    return output.data;
-  };
-
-  const sendProblem = async () => {
-    const count = await localStorage.getItem("count");
-    if (problem.length < 3) {
-      alert("Please type");
-      return;
-    }
-    if (count && parseInt(count) > 4) {
-      onOpen();
-      return;
-    }
-
-    setChanged(10);
-    setLoading(true);
-
-    // api로 보내서 응답을 받는다.
-    const response = await callApi();
-
-    const body: ProblemType = {
-      createdAt: new Date(),
-      question: problem,
-      answer: response,
-      uid: uid,
-    };
-
-    setAnswer(response);
-    setQuestion(problem);
-
-    await dbService.collection("problem").add(body);
-
-    setLoading(false);
-    setProblem("");
-
-    if (count) await localStorage.setItem("count", String(parseInt(count) + 1));
-    else await localStorage.setItem("count", "1");
-
+  const moveTo = (who: string) => {
     router.push({
-      pathname: "/answer",
-      // query: { isFromHome: true, text: value },
+      pathname: "/chat",
     });
   };
 
   return (
     <>
       <Head>
-        <title>Solomon</title>
-        <meta name="description" content="Solomon will give you solution" />
+        <title>HarryPotter</title>
+        <meta name="description" content="Ask to HarryPotter" />
         <link rel="icon" href="/card.png" />
       </Head>
 
-      <MainContainer
-        style={{
-          paddingTop: `${(10 - changed) * 5 + 20}px`,
-        }}>
-        <a
-          href="https://www.producthunt.com/posts/solomongpt-solution-recommender-for-u?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-solomongpt&#0045;solution&#0045;recommender&#0045;for&#0045;u"
-          target="_blank"
-          rel="noreferrer">
-          <img
-            src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=375764&theme=light"
-            alt="SolomonGPT&#0032;&#0045;&#0032;solution&#0032;recommender&#0032;for&#0032;U - AI&#0032;will&#0032;give&#0032;you&#0032;4&#0032;solutions&#0032;to&#0032;solve&#0032;your&#0032;problem&#0046; | Product Hunt"
-            style={{ width: "250px", height: "54px" }}
-            width="250"
-            height="54"
-          />
-        </a>
-        <Image
-          src="/king.png"
-          width={120 + changed * 6}
-          height={120 + changed * 6}
-          alt="king"
-          style={{
-            marginTop: "60px",
-            transition: "3s ease",
-          }}
-        />
-        <h1
-          style={{
-            fontSize: `${(10 - changed) * 0.35}em`,
-          }}>
-          Let me help you <span>Solomon</span>
-        </h1>
-        <h2
-          style={{
-            fontSize: `${(10 - changed) * 0.13}em`,
-            marginTop: `${2 * (10 - changed)}px`,
-          }}>
-          Please write down the problem you are experiencing in detail below.
-          <br />
-          Our AI, Solomon will make 4 solutions for you.
-        </h2>
-
-        <FormContainer
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendProblem();
-          }}>
-          <CustomTextarea
-            placeholder="Ex. I want to keep up-to-date on the deep learning sector, but I don 't know where I can see it."
-            value={problem}
-            onChange={(e) => setProblem(e.currentTarget.value)}
+      <MainContainer>
+        <Background img="castle.jpeg" />
+        <MainTitle>Welcome To Hogwarts!</MainTitle>
+        <CharactersContainer>
+          <div
+            style={{ background: "url(potter.jpeg)" }}
+            onClick={() => moveTo("harry")}
           />
           <div
-            style={{
-              transition: "3s ease",
-              height: `${changed * 5}vh`,
-            }}>
-            {loading && (
-              <Center>
-                <Image
-                  style={{
-                    padding: "15px",
-                    background: "rgba(255,255,255,0.3)",
-                    borderRadius: "4px",
-                  }}
-                  src="/crown.gif"
-                  alt="loading"
-                  width={130}
-                  height={130}
-                />
-              </Center>
-            )}
-          </div>
-          <CustomButton isLoading={loading} onClick={() => sendProblem()}>
-            Send My Problem and get answer by Solomon!
-          </CustomButton>
-          <Description>
-            <p>
-              I{"'"}m not a human being, I{"'"}m an <span>SMART AI</span>, so I
-              can tell you an unexpected solution.
-            </p>
-            <p>
-              The more detail you write, the better your solution comes out.
-            </p>
-            <br />
-            <p>
-              You can ask only 5 times for free.{" "}
-              <strong>
-                Because we use OpenAI{"'"}s most expensive GPT with our prompt
-                engineering
-              </strong>
-            </p>
-            <br />
-            <p>
-              <strong>Below are an examples</strong>
-            </p>
-          </Description>
-        </FormContainer>
-        <Examples />
+            style={{ background: "url(malfoy.jpeg)" }}
+            onClick={() => moveTo("harry")}
+          />
+          <div
+            style={{ background: "url(doby.jpeg)" }}
+            onClick={() => moveTo("harry")}
+          />
+        </CharactersContainer>
       </MainContainer>
-      <AskModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
-      <Footer />
     </>
   );
 };
 
 export default Home;
+
+export const Background = styled.div<{ img: string }>`
+  background: url("castle.jpeg");
+  position: fixed;
+  z-index: -1;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+`;
+
+const MainTitle = styled.p`
+  font-size: 3em;
+  font-weight: 700;
+  color: white;
+`;
+
+const CharactersContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  div {
+    width: 150px;
+    height: 150px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 300px;
+    transition: 0.2s ease;
+    opacity: 0.7;
+    cursor: pointer;
+    margin: 15px;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &:hover {
+      border: 4px solid rgba(255, 255, 255, 0.5);
+      opacity: 0.9;
+    }
+  }
+`;
 
 export const CustomTextarea = styled(Textarea)`
   border: 2px solid rgba(0, 0, 0, 0.6);
@@ -277,25 +139,6 @@ const MainContainer = styled.main`
   }
 `;
 
-const FormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 90%;
-  max-width: 700px;
-  margin-top: 50px;
-`;
-
-const Center = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
 export const CustomButton = styled(Button)`
   border: 2px solid black;
   border-bottom-width: 4px;
@@ -305,19 +148,4 @@ export const CustomButton = styled(Button)`
   margin-top: 15px;
   // background-color: ${({ theme }) => theme.purple03};
   font-size: 1em;
-`;
-
-const Description = styled.div`
-  margin-top: 40px;
-  padding: 20px;
-  // border-radius: 6px;
-  line-height: 1.7em;
-  background: ${({ theme }) => theme.bgColor + "44"};
-  color: rgba(40, 40, 40, 0.8);
-  width: 100%;
-  text-align: center;
-  outline: 3px solid rgba(250, 250, 250, 0.1);
-  span {
-    color: ${({ theme }) => theme.blue02};
-  }
 `;

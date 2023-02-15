@@ -9,51 +9,16 @@ import { useStore } from "../utils/store";
 import AppBar from "../components/AppBar";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import * as ga from "../lib/gtag";
 import Script from "next/script";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { darkMode } = useStore();
   const theme = darkMode ? darkTheme : lightTheme;
 
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      ga.pageview(url);
-    };
-    router.events.on("routeChangeComplete", handleRouteChange);
-    router.events.on("hashChangeComplete", handleRouteChange);
-
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-      router.events.off("hashChangeComplete", handleRouteChange);
-    };
-  }, [router.events]);
-
   return (
     <ChakraProvider>
-      <Script
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${ga.GA_TRACKING_ID}`}
-      />
-      <Script
-        id="myscript"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${ga.GA_TRACKING_ID}', {
-              page_path: window.location.pathname,
-            });
-          `,
-        }}
-      />
       <ThemeProvider theme={theme}>
         <MobileContainer>
-          <AppBar />
           <div className="backdrop" />
           <div className="inner">
             <Component {...pageProps} />
@@ -67,10 +32,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 export default MyApp;
 
 const MobileContainer = styled.div`
-  background: url("grad.png");
   font-family: Pretendard;
   width: 100%;
-  // background: ${({ theme }) => theme.bgColor};
   position: relative;
   flex: 1;
   display: flex;
