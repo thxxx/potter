@@ -23,7 +23,9 @@ const Home: NextPage = () => {
 
       <MainContainer>
         <Background img="castle.jpeg" />
-        <MainTitle>Welcome To The Hogwarts!</MainTitle>
+        <MainTitle>
+          <div className="text text-4">Welcome To The Hogwarts!</div>
+        </MainTitle>
         <CharactersContainer>
           <div
             style={{ background: "url(potter.jpeg)" }}
@@ -56,10 +58,47 @@ export const Background = styled.div<{ img: string }>`
   background-size: cover;
 `;
 
-const MainTitle = styled.p`
-  font-size: 3em;
+const MainTitle = styled.div`
+  font-size: 4em;
   font-weight: 700;
   color: white;
+  font-family: "Montserrat", sans-serif;
+  margin-top: 200px;
+
+  .text-4 {
+    animation: text-shadow 1.5s ease-in-out infinite;
+  }
+
+  /*animation*/
+  @keyframes text-shadow {
+    0% {
+      transform: translateY(0);
+      text-shadow: 0 0 0 #0c2ffb, 0 0 0 #2cfcfd, 0 0 0 #fb203b, 0 0 0 #fefc4b;
+    }
+
+    20% {
+      transform: translateY(-10px);
+      text-shadow: 0 0.125px 0 #0c2ffb, 0 0.25px 0 #2cfcfd, 0 -0.125px 0 #fb203b,
+        0 -0.25px 0 #fefc4b;
+    }
+
+    40% {
+      transform: translateY(5px);
+      text-shadow: 0 -0.0625em 0 #0c2ffb, 0 -0.125em 0 #2cfcfd,
+        0 0.0625em 0 #fb203b, 0 0.125em 0 #fefc4b;
+    }
+
+    60% {
+      transform: translateY(-0.25px);
+      text-shadow: 0 0.03125em 0 #0c2ffb, 0 0.0625em 0 #2cfcfd,
+        0 -0.03125em 0 #fb203b, 0 -0.0625em 0 #fefc4b;
+    }
+
+    80% {
+      transform: translateY(0);
+      text-shadow: 0 0 0 #0c2ffb, 0 0 0 #2cfcfd, 0 0 0 #fb203b, 0 0 0 #fefc4b;
+    }
+  }
 `;
 
 const CharactersContainer = styled.div`
