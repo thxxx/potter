@@ -38,6 +38,7 @@ const MobileContainer = styled.div`
   align-items: center;
   font-family: Pretendard;
   transition: 3s ease;
+  background-color: #040404;
 
   .inner {
     width: 900px;
@@ -51,7 +52,6 @@ const MobileContainer = styled.div`
   }
 
   .backdrop {
-    background: ${({ theme }) => theme.bgColor + "88"};
     position: fixed;
     top: 0;
     left: 0;

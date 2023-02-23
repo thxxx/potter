@@ -10,6 +10,9 @@ const Home: NextPage = () => {
   const moveTo = (who: string) => {
     router.push({
       pathname: "/chat",
+      query: {
+        char: who,
+      },
     });
   };
 
@@ -22,23 +25,20 @@ const Home: NextPage = () => {
       </Head>
 
       <MainContainer>
-        <Background img="castle.jpeg" />
+        <Background img="hogwart1.png" />
         <MainTitle>
           <div className="text text-4">Welcome To The Hogwarts!</div>
         </MainTitle>
         <CharactersContainer>
-          <div
-            style={{ background: "url(potter.jpeg)" }}
-            onClick={() => moveTo("harry")}
-          />
-          <div
-            style={{ background: "url(malfoy.jpeg)" }}
-            onClick={() => moveTo("harry")}
-          />
-          <div
-            style={{ background: "url(doby.jpeg)" }}
-            onClick={() => moveTo("harry")}
-          />
+          <div onClick={() => moveTo("harry")}>
+            <img src="potter1.png" />
+          </div>
+          <div onClick={() => moveTo("malfoy")}>
+            <img src="malfoy.png" />
+          </div>
+          <div onClick={() => moveTo("doby")}>
+            <img src="doby.png" />
+          </div>
         </CharactersContainer>
       </MainContainer>
     </>
@@ -47,8 +47,8 @@ const Home: NextPage = () => {
 
 export default Home;
 
-export const Background = styled.div<{ img: string }>`
-  background: url("castle.jpeg");
+export const Background = styled.div<{ img: string; opacity?: number }>`
+  background: ${({ img }) => `url('${img}')`};
   position: fixed;
   z-index: -1;
   left: 0px;
@@ -56,13 +56,15 @@ export const Background = styled.div<{ img: string }>`
   width: 100vw;
   height: 100vh;
   background-size: cover;
+  opacity: ${({ opacity }) => (opacity ? opacity : 1)};
+  transition: 1.5s ease;
 `;
 
 const MainTitle = styled.div`
-  font-size: 4em;
+  font-size: 3.5em;
   font-weight: 700;
   color: white;
-  font-family: "Montserrat", sans-serif;
+  font-family: ghanachoco;
   margin-top: 200px;
 
   .text-4 {
@@ -108,16 +110,21 @@ const CharactersContainer = styled.div`
   justify-content: center;
 
   div {
-    width: 150px;
-    height: 150px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 300px;
+    }
+    width: 170px;
+    height: 170px;
     border-radius: 300px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
     transition: 0.2s ease;
-    opacity: 0.7;
+    opacity: 0.8;
     cursor: pointer;
-    margin: 15px;
+    margin: 20px;
     background-position: center;
-    background-repeat: no-repeat;
+    background-repeat: repeat;
 
     &:hover {
       border: 4px solid rgba(255, 255, 255, 0.5);

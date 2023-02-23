@@ -3,10 +3,9 @@ import { NextPage } from "next";
 import React, { useEffect, useState } from "react";
 import { useStore } from "../../utils/store";
 import styled from "@emotion/styled";
-import { ArrowForwardIcon, AtSignIcon, ChatIcon } from "@chakra-ui/icons";
-import Image from "next/image";
 import Head from "next/head";
 import { Background } from "..";
+import router from "next/router";
 
 enum ChatType {
   bot = "bot",
@@ -20,15 +19,14 @@ type ChatOne = {
 
 const Answer: NextPage = () => {
   const [text, setText] = useState("");
-  const [responses, setResponses] = useState<any[]>([]);
-  const [greeting, setGreeting] = useState<string>("");
   const [chats, setChats] = useState<ChatOne[]>();
   const [loading, setLoading] = useState(false);
-  const { question, uid, answer } = useStore();
+  const [char, setChar] = useState("harry");
+  const [magic, setMagic] = useState(1);
 
   useEffect(() => {
-    // setResponses();
-  }, []);
+    setChar(router.query.char as string);
+  }, [setChar]);
 
   const callApi = async () => {
     // const body = {
@@ -44,13 +42,15 @@ const Answer: NextPage = () => {
     //   },
     // });
     // const output = await response;
-    return "Shut up!";
+    return char === "harry"
+      ? "Hi I am Harry!"
+      : char === "doby"
+      ? "Doby is freeee"
+      : "Shut up";
   };
 
   const submitChat = async (text: string) => {
-    console.log("채팅을 보낸다.", text);
     if (text.length < 2) return;
-    if (chats && chats.length > 5) return;
     if (loading) return;
 
     setLoading(true);
@@ -79,7 +79,19 @@ const Answer: NextPage = () => {
         },
       ]);
 
-    const response = await callApi();
+    let response = "";
+    if (
+      text.toLowerCase().includes("magic") &&
+      text.toLowerCase().includes("show")
+    ) {
+      response = "Okay wait a second... nox!";
+      setMagic(0.1);
+    } else if (text.toLowerCase() === "lumos") {
+      setMagic(1);
+      response = "Hey that's my magic";
+    } else {
+      response = await callApi();
+    }
 
     if (chats)
       setChats([
@@ -117,43 +129,55 @@ const Answer: NextPage = () => {
         <link rel="icon" href="/card.png" />
       </Head>
       <AnswerContainer>
-        <ImageWrapper>
-          <Image
-            src="/potter.jpeg"
-            alt="we"
-            width={55}
-            height={55}
-            style={{ borderRadius: "200px" }}
-          />
-        </ImageWrapper>
-        {/* <ResponseBox>
-          <span className="tail"></span>
-          <p
-            className="greeting"
-            dangerouslySetInnerHTML={{
-              __html: greeting,
-            }}></p>
-        </ResponseBox> */}
         <br />
-        <Background img="castle.jpeg" />
-        {chats?.map((item, i) => {
-          if (item.type === ChatType.client) {
-            return (
-              <ChatBubble key={i}>
-                <div>{item.text}</div>
-              </ChatBubble>
-            );
-          } else {
-            return (
-              <ChatBubble left key={i}>
-                <div>
-                  <Image src="/king.png" alt="we" width={20} height={15} />
-                  <span>{item.text}</span>
-                </div>
-              </ChatBubble>
-            );
-          }
-        })}
+        <Background img="griff.jpeg" opacity={magic} />
+        <ChatContainer>
+          {!chats && (
+            <ImageWrapper>
+              <img
+                src={
+                  char === "harry"
+                    ? "/potter1.png"
+                    : char === "malfoy"
+                    ? "/malfoy.png"
+                    : "/doby.png"
+                }
+                alt="potter"
+              />
+            </ImageWrapper>
+          )}
+          {chats?.map((item, i) => {
+            if (item.type === ChatType.client) {
+              return (
+                <ChatBubble key={i}>
+                  <div>{item.text}</div>
+                </ChatBubble>
+              );
+            } else {
+              return (
+                <>
+                  <ImageWrapper>
+                    <img
+                      src={
+                        char === "harry"
+                          ? "/potter1.png"
+                          : char === "malfoy"
+                          ? "/malfoy.png"
+                          : "/doby.png"
+                      }
+                      alt="potter"
+                    />
+                  </ImageWrapper>
+                  <ChatBubble left key={i}>
+                    <div>
+                      <span>{item.text}</span>
+                    </div>
+                  </ChatBubble>
+                </>
+              );
+            }
+          })}
+        </ChatContainer>
 
         <InputWrapperFixed
           onSubmit={(e: any) => {
@@ -161,14 +185,13 @@ const Answer: NextPage = () => {
             e.preventDefault();
           }}>
           <CustomInput
-            isDisabled={chats && chats.length > 5 ? true : false}
-            placeholder="Have a chit-chat"
-            p="24px 15px"
+            // isDisabled={chats && chats.length > 5 ? true : false}
+            // placeholder="Have a chit-chat"
             value={text}
             onChange={(e) => setText(e.currentTarget.value)}
           />
           <span className="icon" onClick={(e) => submitChat(text)}>
-            <ArrowForwardIcon color="whiteAlpha.800" />
+            {/* <img src="wand.png" /> */}
           </span>
         </InputWrapperFixed>
         {/*   <Input value={text} onChange={(e) => setText(e.currentTarget.value)} /> */}
@@ -179,16 +202,22 @@ const Answer: NextPage = () => {
 
 export default Answer;
 
-const CustomInput = styled(Input)`
+const ChatContainer = styled.div`
+  min-height: 60vh;
+`;
+
+const CustomInput = styled.input`
   border: 2px solid rgba(0, 0, 0, 0.6);
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
+  background: rgba(250, 250, 250, 0.8);
+  color: black;
+  padding: 15px;
+  border-radius: 8px;
 
   &:hover {
-    border: 2px solid rgba(0, 0, 0, 0.6);
+    // border: 2px solid rgba(150, 0, 0, 0.6);
   }
   &:focus {
-    border: 2px solid rgba(0, 0, 0, 0.9);
+    outline: 1px solid rgba(180, 100, 100, 0.9);
   }
 `;
 
@@ -197,6 +226,7 @@ const InputWrapperFixed = styled.form`
   display: flex;
   flex-direction: column;
   margin-top: 50px;
+  position: relative;
 
   .icon {
     display: flex;
@@ -204,13 +234,17 @@ const InputWrapperFixed = styled.form`
     justify-content: center;
     position: absolute;
     right: 10px;
-    top: 10px;
-    background-color: ${({ theme }) => theme.purple03};
-    width: 32px;
-    height: 32px;
+    top: 11px;
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 35px;
+    height: 35px;
     border-radius: 50px;
     z-index: 1;
     cursor: pointer;
+    img {
+      width: 35px;
+      height: 35px;
+    }
   }
 `;
 const AnswerContainer = styled.div`
@@ -218,75 +252,9 @@ const AnswerContainer = styled.div`
   color: ${({ theme }) => theme.color};
 `;
 
-const Response = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  .solution {
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-top: 15px;
-    font-weight: 700;
-
-    span{
-      color${({ theme }) => theme.blue02};
-    }
-  }
-
-  .desc {
-    padding: 5px 10px;
-  }
-
-  .link{
-    padding: 5px 10px;
-
-  }
-
-  .label {
-    padding-right: 7px;
-    font-weight: 700;
-  }
-`;
-
-const ResponseBox = styled.div`
-  padding: 12px;
-  padding-top: 25px;
-  border-radius: 8px;
-  border: 2px solid ${({ theme }) => theme.darkGrey};
-  background: ${({ theme }) => theme.grey};
-  color: ${({ theme }) => theme.color};
-  font-size: 16px;
-  max-width: 90%;
-  margin-top: 20px;
-  position: relative;
-  z-index: 2;
-
-  .greeting {
-    padding: 0px 12px;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-  }
-
-  .tail {
-    z-index: 1;
-    background: ${({ theme }) => theme.grey};
-    width: 25px;
-    height: 25px;
-    position: absolute;
-    transform: rotate(45deg);
-    top: -5px;
-    left: 25px;
-  }
-  @media (max-width: 420px) {
-    max-width: 98%;
-    font-size: 14px;
-  }
-`;
-
 const ImageWrapper = styled.div`
   margin-top: 30px;
-  padding: 10px;
-  border-radius: 50px;
+  padding: 2px;
   width: 80px;
   height: 80px;
   display: flex;
@@ -294,6 +262,12 @@ const ImageWrapper = styled.div`
   justify-content: center;
   background: ${({ theme }) => theme.grey};
   box-shadow: 4px 4px 15px rgba(0, 0, 20, 0.3);
+  border-radius: 50px;
+
+  img {
+    width: 100px;
+    border-radius: 150px;
+  }
 `;
 
 const ChatBubble = styled.div<{ left?: boolean }>`
@@ -314,9 +288,14 @@ const ChatBubble = styled.div<{ left?: boolean }>`
     color: ${({ theme }) => theme.color};
     background: ${({ theme }) => theme.grey};
     max-width: 90%;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
 
     span {
-      margin-left: 8px;
+      margin-left: 2px;
     }
   }
 `;
