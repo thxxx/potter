@@ -27,7 +27,7 @@ const Home: NextPage = () => {
       <MainContainer>
         <Background img="hogwart1.png" />
         <MainTitle>
-          <div className="text text-4">Welcome To The Hogwarts!</div>
+          <div className="text text-4">Welcome To Our Hogwarts!</div>
         </MainTitle>
         <CharactersContainer>
           <div onClick={() => moveTo("harry")}>
